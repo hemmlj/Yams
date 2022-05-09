@@ -1,3 +1,49 @@
+## Main
+
+##### Breaking
+
+* None.
+
+##### Enhancements
+
+* None.
+
+##### Bug Fixes
+
+* None.
+
+## 5.0.1
+
+##### Breaking
+
+* None.
+
+##### Enhancements
+
+* None.
+
+##### Bug Fixes
+
+* Build CYaml as PIC (Position Independent Code) when building with
+  CMake.  
+  [Yuta Saito](https://github.com/kateinoigakukun)
+
+## 5.0.0
+
+##### Breaking
+
+* Swift 5.4 or later is now required to build Yams.  
+  [JP Simard](https://github.com/jpsim)
+
+##### Enhancements
+
+* Adding `sequenceStyle` and `mappingStyle` to `Emitter.Options`
+  [Terence Grant](https://github.com/tatewake)
+
+##### Bug Fixes
+
+* None.
+
 ## 4.0.6
 
 ##### Breaking

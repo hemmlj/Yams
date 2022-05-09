@@ -27,8 +27,8 @@ jobs:
   Xcode:
     strategy:
       matrix:
-        xcode_version: ['11.2.1', '11.3.1', '11.4.1', '11.5', '11.6', '11.7', '12.0.1', '12.1', '12.2', '12.4']
-    runs-on: macos-latest
+        xcode_version: ['12.5.1', '13.0', '13.1', '13.2.1']
+    runs-on: macos-11
     env:
       DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode_version }}.app
     steps:
@@ -37,7 +37,7 @@ jobs:
       - run: YAMS_DEFAULT_ENCODING=UTF16 swift test --parallel
       - run: YAMS_DEFAULT_ENCODING=UTF8 swift test --parallel
       - name: Code Coverage
-        if: matrix.xcode_version == '12.4'
+        if: matrix.xcode_version == '13.2.1'
         run: |
           swift test --enable-code-coverage
           xcrun llvm-cov export -format="lcov" .build/debug/YamsPackageTests.xctest/Contents/MacOS/YamsPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage.lcov
@@ -46,10 +46,23 @@ jobs:
           fi
         env: { 'CODECOV_TOKEN': '${{ secrets.CODECOV_TOKEN }}' }
 
+  Xcode_Monterey:
+    strategy:
+      matrix:
+        xcode_version: ['13.3']
+    runs-on: macos-12
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode_version }}.app
+    steps:
+      - uses: actions/checkout@v2
+      - run: swift -version
+      - run: YAMS_DEFAULT_ENCODING=UTF16 swift test --parallel
+      - run: YAMS_DEFAULT_ENCODING=UTF8 swift test --parallel
+
   Linux:
     strategy:
       matrix:
-        tag: ['5.1', '5.2', '5.3']
+        tag: ['5.4', '5.5']
     runs-on: ubuntu-latest
     container:
       image: swift:${{ matrix.tag }}
@@ -60,26 +73,25 @@ jobs:
 
   Windows:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        include:
+          - branch: swift-5.4.3-release
+            tag: 5.4.3-RELEASE
+
+          - branch: swift-5.5.1-release
+            tag: 5.5.1-RELEASE
+
+          - branch: development
+            tag: DEVELOPMENT-SNAPSHOT-2021-11-20-a
+
     steps:
       - uses: actions/checkout@v2
-      - uses: seanmiddleditch/gha-setup-vsdevenv@master
-      - name: Install swift-DEVELOPMENT-SNAPSHOT-2021-02-18-a
-        run: |
-          Install-Binary -Url "https://swift.org/builds/development/windows10/swift-DEVELOPMENT-SNAPSHOT-2021-02-18-a/swift-DEVELOPMENT-SNAPSHOT-2021-02-18-a-windows10.exe" -Name "installer.exe" -ArgumentList ("-q")
-      - name: Set Environment Variables
-        run: |
-          echo "SDKROOT=C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "DEVELOPER_DIR=C:\Library\Developer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Adjust Paths
-        run: |
-          echo "C:\Library\Swift-development\bin;C:\Library\icu-67\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      - name: Install Supporting Files
-        run: |
-          Copy-Item "$env:SDKROOT\usr\share\ucrt.modulemap" -destination "$env:UniversalCRTSdkDir\Include\$env:UCRTVersion\ucrt\module.modulemap"
-          Copy-Item "$env:SDKROOT\usr\share\visualc.modulemap" -destination "$env:VCToolsInstallDir\include\module.modulemap"
-          Copy-Item "$env:SDKROOT\usr\share\visualc.apinotes" -destination "$env:VCToolsInstallDir\include\visualc.apinotes"
-          Copy-Item "$env:SDKROOT\usr\share\winsdk.modulemap" -destination "$env:UniversalCRTSdkDir\Include\$env:UCRTVersion\um\module.modulemap"
+      - uses: compnerd/gha-setup-swift@main
+        with:
+          branch: ${{ matrix.branch }}
+          tag: ${{ matrix.tag }}
       # Commands to run once connected via SSH:
       #
       # >d:

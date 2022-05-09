@@ -13,7 +13,7 @@ A sweet and swifty [YAML](http://yaml.org/) parser built on
 
 ## Installation
 
-Building Yams requires Xcode 11.x or a Swift 5.1+ toolchain with the
+Building Yams requires Xcode 12.5+ or a Swift 5.4+ toolchain with the
 Swift Package Manager or CMake and Ninja.
 
 ### CMake
@@ -38,7 +38,7 @@ cmake --build /path/to/build
 
 ### Swift Package Manager
 
-Add `.package(url: "https://github.com/jpsim/Yams.git", from: "4.0.6")` to your
+Add `.package(url: "https://github.com/jpsim/Yams.git", from: "5.0.1")` to your
 `Package.swift` file's `dependencies`.
 
 ### CocoaPods
@@ -60,7 +60,7 @@ http_archive(
     urls = [
         "https://github.com/jpsim/Yams/archive/%s.zip" % YAMS_GIT_SHA,
     ],
-    strip_prefix = "yams-%s" % YAMS_GIT_SHA,
+    strip_prefix = "Yams-%s" % YAMS_GIT_SHA,
 )
 ```
 
